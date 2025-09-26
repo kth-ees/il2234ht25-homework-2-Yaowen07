@@ -8,6 +8,24 @@ module shift_register #(parameter N=4)
                        output logic [N-1:0] parallel_out,
                        output logic serial_out);
 
-//complete here
+logic [N-1:0] shift_reg;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            shift_reg <= '0;
+        end else if (load_enable) begin
+            if (serial_parallel) begin
+                // Parallel load mode
+                shift_reg <= parallel_in;
+            end else begin
+                // Serial shift mode
+                shift_reg <= {shift_reg[N-2:0], serial_in};
+            end
+        end
+    end
+
+    assign parallel_out = shift_reg;
+    assign serial_out = shift_reg[N-1];
 
 endmodule
+
